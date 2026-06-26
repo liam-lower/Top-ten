@@ -99,8 +99,8 @@
     }
 
     .game-thumb {
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
         border-radius: 8px;
         background: #222;
         overflow: hidden;
@@ -163,6 +163,7 @@
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
+        min-height: 60px;
     }
 
     .tier-content.drag-over {
@@ -223,6 +224,9 @@
 </main>
 
 <script>
+/* -----------------------------
+   GAME LIST (50+ GAMES)
+------------------------------*/
 const GAME_DATA = [
     "Roblox","Minecraft","Grand Theft Auto V","Fortnite","Call of Duty: Warzone",
     "Apex Legends","Valorant","League of Legends","Dota 2","Counter-Strike 2",
@@ -238,61 +242,44 @@ const GAME_DATA = [
     "Lost Ark","Diablo IV","Path of Exile","Brawl Stars","Clash Royale","Clash of Clans"
 ];
 
+/* -----------------------------
+   HIGH-RES WIKIPEDIA BOX ART ICONS (EXAMPLES)
+   You can replace any URL with a better one if you want.
+------------------------------*/
 const GAME_ICONS = {
-    "Roblox": "https://yourcdn.com/roblox.png",
-    "Minecraft": "https://yourcdn.com/minecraft.png",
-    "Grand Theft Auto V": "https://yourcdn.com/gta5.png",
-    "Fortnite": "https://yourcdn.com/fortnite.png",
-    "Call of Duty: Warzone": "https://yourcdn.com/warzone.png",
-    "Apex Legends": "https://yourcdn.com/apex.png",
-    "Valorant": "https://yourcdn.com/valorant.png",
-    "League of Legends": "https://yourcdn.com/lol.png",
-    "Dota 2": "https://yourcdn.com/dota2.png",
-    "Counter-Strike 2": "https://yourcdn.com/cs2.png",
-    "Overwatch 2": "https://yourcdn.com/overwatch2.png",
-    "Rocket League": "https://yourcdn.com/rocketleague.png",
-    "PUBG": "https://yourcdn.com/pubg.png",
-    "Among Us": "https://yourcdn.com/amongus.png",
-    "Fall Guys": "https://yourcdn.com/fallguys.png",
-    "Genshin Impact": "https://yourcdn.com/genshin.png",
-    "Elden Ring": "https://yourcdn.com/eldenring.png",
-    "The Legend of Zelda: Breath of the Wild": "https://yourcdn.com/zelda.png",
-    "Red Dead Redemption 2": "https://yourcdn.com/rdr2.png",
-    "Cyberpunk 2077": "https://yourcdn.com/cyberpunk.png",
-    "Halo Infinite": "https://yourcdn.com/halo.png",
-    "Destiny 2": "https://yourcdn.com/destiny2.png",
-    "Rainbow Six Siege": "https://yourcdn.com/r6s.png",
-    "Battlefield 2042": "https://yourcdn.com/bf2042.png",
-    "FIFA 24": "https://yourcdn.com/fifa24.png",
-    "NBA 2K24": "https://yourcdn.com/nba2k24.png",
-    "Madden NFL 24": "https://yourcdn.com/madden24.png",
-    "Animal Crossing: New Horizons": "https://yourcdn.com/animalcrossing.png",
-    "Super Smash Bros. Ultimate": "https://yourcdn.com/ssbu.png",
-    "Mario Kart 8 Deluxe": "https://yourcdn.com/mk8d.png",
-    "Splatoon 3": "https://yourcdn.com/splatoon3.png",
-    "Pokémon Scarlet/Violet": "https://yourcdn.com/pokemon.png",
-    "Monster Hunter: World": "https://yourcdn.com/mhw.png",
-    "Monster Hunter Rise": "https://yourcdn.com/mhrise.png",
-    "Sea of Thieves": "https://yourcdn.com/seaofthieves.png",
-    "Rust": "https://yourcdn.com/rust.png",
-    "ARK: Survival Evolved": "https://yourcdn.com/ark.png",
-    "Terraria": "https://yourcdn.com/terraria.png",
-    "The Sims 4": "https://yourcdn.com/sims4.png",
-    "Starfield": "https://yourcdn.com/starfield.png",
-    "No Man’s Sky": "https://yourcdn.com/nomanssky.png",
-    "Hades": "https://yourcdn.com/hades.png",
-    "Stardew Valley": "https://yourcdn.com/stardew.png",
-    "Dead by Daylight": "https://yourcdn.com/dbd.png",
-    "Phasmophobia": "https://yourcdn.com/phasmophobia.png",
-    "Warframe": "https://yourcdn.com/warframe.png",
-    "World of Warcraft": "https://yourcdn.com/wow.png",
-    "Final Fantasy XIV": "https://yourcdn.com/ffxiv.png",
-    "Lost Ark": "https://yourcdn.com/lostark.png",
-    "Diablo IV": "https://yourcdn.com/diablo4.png",
-    "Path of Exile": "https://yourcdn.com/poe.png",
-    "Brawl Stars": "https://yourcdn.com/brawlstars.png",
-    "Clash Royale": "https://yourcdn.com/clashroyale.png",
-    "Clash of Clans": "https://yourcdn.com/clashofclans.png"
+    "Minecraft": "https://upload.wikimedia.org/wikipedia/en/5/51/Minecraft_cover.png",
+    "Grand Theft Auto V": "https://upload.wikimedia.org/wikipedia/en/a/a5/Grand_Theft_Auto_V.png",
+    "Fortnite": "https://upload.wikimedia.org/wikipedia/en/thumb/0/09/Fortnite_cover_art.jpg/600px-Fortnite_cover_art.jpg",
+    "Among Us": "https://upload.wikimedia.org/wikipedia/en/9/9a/Among_Us_cover_art.jpg",
+    "Fall Guys": "https://upload.wikimedia.org/wikipedia/en/3/3b/Fall_Guys_cover_art.jpg",
+    "Elden Ring": "https://upload.wikimedia.org/wikipedia/en/b/b9/Elden_Ring_Box_art.jpg",
+    "The Legend of Zelda: Breath of the Wild": "https://upload.wikimedia.org/wikipedia/en/0/0b/The_Legend_of_Zelda_Breath_of_the_Wild.jpg",
+    "Red Dead Redemption 2": "https://upload.wikimedia.org/wikipedia/en/4/44/Red_Dead_Redemption_II.jpg",
+    "Cyberpunk 2077": "https://upload.wikimedia.org/wikipedia/en/9/9f/Cyberpunk_2077_box_art.jpg",
+    "Halo Infinite": "https://upload.wikimedia.org/wikipedia/en/0/0c/Halo_Infinite.png",
+    "Destiny 2": "https://upload.wikimedia.org/wikipedia/en/0/02/Destiny_2_%28artwork%29.jpg",
+    "Rainbow Six Siege": "https://upload.wikimedia.org/wikipedia/en/4/4d/Tom_Clancy%27s_Rainbow_Six_Siege_cover_art.jpg",
+    "Battlefield 2042": "https://upload.wikimedia.org/wikipedia/en/0/02/Battlefield_2042_cover_art.jpg",
+    "Animal Crossing: New Horizons": "https://upload.wikimedia.org/wikipedia/en/2/2d/Animal_Crossing_New_Horizons.jpg",
+    "Super Smash Bros. Ultimate": "https://upload.wikimedia.org/wikipedia/en/5/5c/Super_Smash_Bros._Ultimate.jpg",
+    "Mario Kart 8 Deluxe": "https://upload.wikimedia.org/wikipedia/en/0/0d/Mario_Kart_8_Deluxe.jpg",
+    "Splatoon 3": "https://upload.wikimedia.org/wikipedia/en/3/3c/Splatoon_3_cover_art.jpg",
+    "Monster Hunter: World": "https://upload.wikimedia.org/wikipedia/en/2/2d/Monster_Hunter_World_cover_art.jpg",
+    "Monster Hunter Rise": "https://upload.wikimedia.org/wikipedia/en/5/5c/Monster_Hunter_Rise_cover_art.jpg",
+    "Sea of Thieves": "https://upload.wikimedia.org/wikipedia/en/4/4b/Sea_of_Thieves_cover_art.jpg",
+    "Terraria": "https://upload.wikimedia.org/wikipedia/en/1/1d/Terraria_Cover_Art.png",
+    "The Sims 4": "https://upload.wikimedia.org/wikipedia/en/5/5f/The_Sims_4_cover_art.jpg",
+    "No Man’s Sky": "https://upload.wikimedia.org/wikipedia/en/3/32/No_Man%27s_Sky_cover_art.jpg",
+    "Hades": "https://upload.wikimedia.org/wikipedia/en/0/0a/Hades_cover_art.png",
+    "Stardew Valley": "https://upload.wikimedia.org/wikipedia/en/5/5c/Stardew_Valley_logo.png",
+    "Dead by Daylight": "https://upload.wikimedia.org/wikipedia/en/5/5d/Dead_by_Daylight_Cover_Art.jpg",
+    "Phasmophobia": "https://upload.wikimedia.org/wikipedia/en/4/4b/Phasmophobia_cover_art.jpg",
+    "Warframe": "https://upload.wikimedia.org/wikipedia/en/2/2b/Warframe_Cover_Art.jpg",
+    "World of Warcraft": "https://upload.wikimedia.org/wikipedia/en/0/0c/World_of_Warcraft_Cover_Art.jpg",
+    "Final Fantasy XIV": "https://upload.wikimedia.org/wikipedia/en/0/0d/Final_Fantasy_XIV_Heavensward_box_art.jpg",
+    "Diablo IV": "https://upload.wikimedia.org/wikipedia/en/5/5c/Diablo_IV_cover_art.png",
+    "Path of Exile": "https://upload.wikimedia.org/wikipedia/en/0/0d/Path_of_Exile_logo.png"
+    // You can add more entries here if you want.
 };
 
 const gameListEl = document.getElementById("gameList");
@@ -304,6 +291,9 @@ let ghostCard = null;
 let offsetX = 0;
 let offsetY = 0;
 
+/* -----------------------------
+   CREATE GAME CARD
+------------------------------*/
 function createGameCard(name) {
     const card = document.createElement("div");
     card.className = "game-card";
@@ -316,7 +306,7 @@ function createGameCard(name) {
     const img = document.createElement("img");
     if (GAME_ICONS[name]) {
         img.src = GAME_ICONS[name];
-        img.alt = name + " icon";
+        img.alt = name + " box art";
     } else {
         img.style.background = "linear-gradient(135deg,#48c6ef,#6f86d6)";
     }
@@ -335,7 +325,9 @@ function createGameCard(name) {
     return card;
 }
 
-/* MOUSE DRAG */
+/* -----------------------------
+   MOUSE DRAG
+------------------------------*/
 function addMouseDrag(card) {
     card.addEventListener("dragstart", e => {
         draggedCard = card;
@@ -349,7 +341,9 @@ function addMouseDrag(card) {
     });
 }
 
-/* TOUCH DRAG (TierMaker style) */
+/* -----------------------------
+   TOUCH DRAG (TierMaker style)
+------------------------------*/
 function addTouchDrag(card) {
     card.addEventListener("touchstart", e => {
         const touch = e.touches[0];
@@ -413,7 +407,9 @@ function addTouchDrag(card) {
     }, { passive: true });
 }
 
-/* MOUSE DROP TARGETS */
+/* -----------------------------
+   MOUSE DROP TARGETS
+------------------------------*/
 tierEls.forEach(tier => {
     tier.addEventListener("dragover", e => e.preventDefault());
     tier.addEventListener("drop", e => {
@@ -428,13 +424,15 @@ gameListEl.addEventListener("drop", e => {
     if (draggedCard) gameListEl.appendChild(draggedCard);
 });
 
-/* RENDER LIST */
+/* -----------------------------
+   RENDER GAME LIST
+------------------------------*/
 function renderGameList(filter = "") {
     gameListEl.innerHTML = "";
     const f = filter.toLowerCase();
 
     GAME_DATA.forEach(name => {
-        // Only show games not already in tiers
+        // Skip games already placed in tiers
         let placed = false;
         tierEls.forEach(tier => {
             tier.querySelectorAll(".game-card").forEach(card => {
@@ -453,8 +451,10 @@ searchInput.addEventListener("input", () => {
     renderGameList(searchInput.value);
 });
 
-/* SAVE / LOAD / RESET */
-const STORAGE_KEY = "tierSave_icons_v2";
+/* -----------------------------
+   SAVE / LOAD / RESET
+------------------------------*/
+const STORAGE_KEY = "tierSave_wiki_boxart_v1";
 
 document.getElementById("saveBtn").onclick = () => {
     const data = { list: [] };
@@ -492,7 +492,7 @@ document.getElementById("loadBtn").onclick = () => {
                     placed = true;
                 }
             });
-            if (!placed && !data.list) {
+            if (!placed && (!data.list || !data.list.includes(name))) {
                 gameListEl.appendChild(card);
             }
         }
@@ -506,7 +506,9 @@ document.getElementById("resetBtn").onclick = () => {
     renderGameList();
 };
 
-/* INITIAL */
+/* -----------------------------
+   INITIAL LOAD
+------------------------------*/
 renderGameList();
 </script>
 
