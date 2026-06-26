@@ -1,9 +1,641 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>My Website</title>
+<meta charset="UTF-8">
+<title>Game Tier Ranking</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    :root {
+        /* Custom colors */
+        --bg-main: #0b1020;
+        --bg-panel: #14192b;
+        --bg-card: #1f2640;
+        --border-panel: #30395c;
+        --text-main: #f5f7ff;
+
+        --tier-S: #ff4d6a;
+        --tier-A: #ff9f43;
+        --tier-B: #ffd93b;
+        --tier-C: #4cd964;
+        --tier-D: #4da6ff;
+        --tier-F: #b84dff;
+
+        --accent: #48c6ef;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top, #1b2340 0, #050814 55%, #000000 100%);
+        color: var(--text-main);
+        display: flex;
+        min-height: 100vh;
+    }
+
+    /* Layout */
+    .sidebar {
+        width: 260px;
+        background: var(--bg-panel);
+        border-right: 2px solid var(--border-panel);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .sidebar-header {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        text-align: center;
+    }
+
+    .sidebar-header h1 {
+        font-size: 20px;
+        margin: 0;
+    }
+
+    .sidebar-header small {
+        color: #a8b0d8;
+    }
+
+    .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .btn {
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--accent);
+        background: linear-gradient(135deg, #1b2945, #122034);
+        color: var(--accent);
+        font-size: 12px;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 0 10px rgba(72, 198, 239, 0.4);
+        background: linear-gradient(135deg, #22345a, #182a42);
+    }
+
+    .btn.secondary {
+        border-color: #6c7bd8;
+        color: #c3c9ff;
+    }
+
+    .search-box {
+        margin-top: 4px;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 6px 8px;
+        border-radius: 999px;
+        border: 1px solid #3b456b;
+        background: #101528;
+        color: var(--text-main);
+        font-size: 12px;
+        outline: none;
+    }
+
+    .search-box input::placeholder {
+        color: #6f789f;
+    }
+
+    .game-list {
+        flex: 1;
+        overflow-y: auto;
+        padding-right: 4px;
+        margin-top: 4px;
+    }
+
+    .game-card {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px;
+        margin-bottom: 8px;
+        background: var(--bg-card);
+        border-radius: 10px;
+        cursor: grab;
+        border: 1px solid #2c3558;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .game-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(0,0,0,0.5);
+        border-color: var(--accent);
+        background: #232b4a;
+    }
+
+    .game-card.dragging {
+        opacity: 0.6;
+        transform: scale(0.97);
+        box-shadow: 0 0 0 2px var(--accent);
+    }
+
+    .game-thumb {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #48c6ef, #6f86d6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 700;
+        color: #050814;
+        flex-shrink: 0;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .game-thumb::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at top left, rgba(255,255,255,0.35), transparent 55%);
+        mix-blend-mode: screen;
+        opacity: 0.8;
+    }
+
+    .game-title {
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .game-meta {
+        font-size: 11px;
+        color: #9aa3d4;
+    }
+
+    /* Tier area */
+    .tiers-wrapper {
+        flex: 1;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .tiers-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+
+    .tiers-header h2 {
+        margin: 0;
+        font-size: 18px;
+    }
+
+    .tiers-header span {
+        font-size: 11px;
+        color: #a8b0d8;
+    }
+
+    .tier-row {
+        display: flex;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--border-panel);
+        background: rgba(10, 14, 30, 0.9);
+        backdrop-filter: blur(6px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.55);
+        min-height: 80px;
+        position: relative;
+    }
+
+    .tier-label {
+        width: 72px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 24px;
+        color: #050814;
+        text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+        letter-spacing: 1px;
+    }
+
+    .tier-label span {
+        font-size: 11px;
+        font-weight: 600;
+        margin-top: 2px;
+        text-transform: uppercase;
+    }
+
+    .tier-label.S { background: var(--tier-S); }
+    .tier-label.A { background: var(--tier-A); }
+    .tier-label.B { background: var(--tier-B); }
+    .tier-label.C { background: var(--tier-C); }
+    .tier-label.D { background: var(--tier-D); }
+    .tier-label.F { background: var(--tier-F); }
+
+    .tier-content {
+        flex: 1;
+        padding: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-content: flex-start;
+        position: relative;
+        transition: background 0.2s ease;
+    }
+
+    .tier-content::before {
+        content: attr(data-hint);
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        color: #6f789f;
+        pointer-events: none;
+        opacity: 0.5;
+    }
+
+    .tier-content.has-items::before {
+        content: "";
+        opacity: 0;
+    }
+
+    .tier-content.drag-over {
+        background: rgba(72, 198, 239, 0.12);
+        box-shadow: inset 0 0 0 1px rgba(72, 198, 239, 0.6);
+    }
+
+    /* Animations */
+    @keyframes popIn {
+        from {
+            transform: scale(0.9) translateY(4px);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .game-card.pop-in {
+        animation: popIn 0.18s ease-out;
+    }
+
+    /* Mobile layout */
+    @media (max-width: 900px) {
+        body {
+            flex-direction: column;
+        }
+
+        .sidebar {
+            width: 100%;
+            border-right: none;
+            border-bottom: 2px solid var(--border-panel);
+            max-height: 260px;
+        }
+
+        .tiers-wrapper {
+            padding: 12px;
+        }
+
+        .tier-row {
+            flex-direction: column;
+        }
+
+        .tier-label {
+            width: 100%;
+            flex-direction: row;
+            justify-content: center;
+            gap: 8px;
+            padding: 6px 0;
+        }
+
+        .tier-content {
+            min-height: 70px;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .sidebar-header h1 {
+            font-size: 18px;
+        }
+        .game-card {
+            padding: 6px;
+        }
+        .game-thumb {
+            width: 32px;
+            height: 32px;
+        }
+    }
+</style>
 </head>
 <body>
-    <h1>Welcome to my site!</h1>
-    <p>Coming soon...</p>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <h1>Popular Games</h1>
+        <small>Drag a game into any tier to rank it.</small>
+        <div class="controls">
+            <button class="btn" id="saveBtn">Save rankings</button>
+            <button class="btn secondary" id="loadBtn">Load rankings</button>
+            <button class="btn secondary" id="resetBtn">Reset</button>
+        </div>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search games…">
+        </div>
+    </div>
+    <div class="game-list" id="gameList"></div>
+</aside>
+
+<!-- Tier list -->
+<main class="tiers-wrapper">
+    <div class="tiers-header">
+        <h2>Game Tier Chart</h2>
+        <span>Tap & hold on mobile, drag on desktop. Your rankings are saved locally.</span>
+    </div>
+
+    <div class="tier-row">
+        <div class="tier-label S">
+            S
+            <span>Legendary</span>
+        </div>
+        <div class="tier-content" data-rank="S" data-hint="Drop the absolute best games here."></div>
+    </div>
+
+    <div class="tier-row">
+        <div class="tier-label A">
+            A
+            <span>Excellent</span>
+        </div>
+        <div class="tier-content" data-rank="A" data-hint="Amazing games that you love playing."></div>
+    </div>
+
+    <div class="tier-row">
+        <div class="tier-label B">
+            B
+            <span>Great</span>
+        </div>
+        <div class="tier-content" data-rank="B" data-hint="Solid picks you enjoy often."></div>
+    </div>
+
+    <div class="tier-row">
+        <div class="tier-label C">
+            C
+            <span>Good</span>
+        </div>
+        <div class="tier-content" data-rank="C" data-hint="Fun, but not your top favorites."></div>
+    </div>
+
+    <div class="tier-row">
+        <div class="tier-label D">
+            D
+            <span>Meh</span>
+        </div>
+        <div class="tier-content" data-rank="D" data-hint="Okay, but you rarely play them."></div>
+    </div>
+
+    <div class="tier-row">
+        <div class="tier-label F">
+            F
+            <span>Nope</span>
+        </div>
+        <div class="tier-content" data-rank="F" data-hint="Games you’d rather skip."></div>
+    </div>
+</main>
+
+<script>
+    // 50+ popular games
+    const GAME_DATA = [
+        "Roblox","Minecraft","Grand Theft Auto V","Fortnite","Call of Duty: Warzone",
+        "Apex Legends","Valorant","League of Legends","Dota 2","Counter-Strike 2",
+        "Overwatch 2","Rocket League","PUBG","Among Us","Fall Guys",
+        "Genshin Impact","Elden Ring","The Legend of Zelda: Breath of the Wild",
+        "Red Dead Redemption 2","Cyberpunk 2077","Halo Infinite","Destiny 2",
+        "Rainbow Six Siege","Battlefield 2042","FIFA 24","NBA 2K24","Madden NFL 24",
+        "Animal Crossing: New Horizons","Super Smash Bros. Ultimate","Mario Kart 8 Deluxe",
+        "Splatoon 3","Pokémon Scarlet/Violet","Monster Hunter: World",
+        "Monster Hunter Rise","Sea of Thieves","Rust","ARK: Survival Evolved",
+        "Terraria","The Sims 4","Starfield","No Man’s Sky","Hades",
+        "Stardew Valley","Dead by Daylight","Phasmophobia","Warframe",
+        "World of Warcraft","Final Fantasy XIV","Lost Ark","Diablo IV",
+        "Path of Exile","Brawl Stars","Clash Royale","Clash of Clans"
+    ];
+
+    const gameListEl = document.getElementById("gameList");
+    const searchInput = document.getElementById("searchInput");
+    const tierEls = document.querySelectorAll(".tier-content");
+    const saveBtn = document.getElementById("saveBtn");
+    const loadBtn = document.getElementById("loadBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const STORAGE_KEY = "gameTierRankings_v1";
+
+    let draggedCard = null;
+
+    function createGameCard(name) {
+        const card = document.createElement("div");
+        card.className = "game-card pop-in";
+        card.draggable = true;
+        card.dataset.game = name;
+
+        const thumb = document.createElement("div");
+        thumb.className = "game-thumb";
+        thumb.textContent = getInitials(name);
+
+        const info = document.createElement("div");
+        const title = document.createElement("div");
+        title.className = "game-title";
+        title.textContent = name;
+        const meta = document.createElement("div");
+        meta.className = "game-meta";
+        meta.textContent = "Drag to rank";
+
+        info.appendChild(title);
+        info.appendChild(meta);
+
+        card.appendChild(thumb);
+        card.appendChild(info);
+
+        addDragHandlers(card);
+        return card;
+    }
+
+    function getInitials(name) {
+        const parts = name.split(" ");
+        if (parts.length === 1) return parts[0].slice(0,2).toUpperCase();
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+
+    function renderGameList(filter = "") {
+        gameListEl.innerHTML = "";
+        const lowerFilter = filter.toLowerCase();
+        GAME_DATA.forEach(name => {
+            if (!lowerFilter || name.toLowerCase().includes(lowerFilter)) {
+                // Only show games not already placed in tiers
+                if (!isGamePlaced(name)) {
+                    gameListEl.appendChild(createGameCard(name));
+                }
+            }
+        });
+    }
+
+    function isGamePlaced(name) {
+        let placed = false;
+        tierEls.forEach(tier => {
+            tier.querySelectorAll(".game-card").forEach(card => {
+                if (card.dataset.game === name) placed = true;
+            });
+        });
+        return placed;
+    }
+
+    function addDragHandlers(card) {
+        card.addEventListener("dragstart", e => {
+            draggedCard = card;
+            card.classList.add("dragging");
+            e.dataTransfer.effectAllowed = "move";
+        });
+
+        card.addEventListener("dragend", () => {
+            card.classList.remove("dragging");
+            draggedCard = null;
+        });
+    }
+
+    tierEls.forEach(tier => {
+        tier.addEventListener("dragover", e => {
+            e.preventDefault();
+            tier.classList.add("drag-over");
+        });
+
+        tier.addEventListener("dragleave", () => {
+            tier.classList.remove("drag-over");
+        });
+
+        tier.addEventListener("drop", e => {
+            e.preventDefault();
+            tier.classList.remove("drag-over");
+            if (!draggedCard) return;
+
+            // Move card (not clone)
+            const originParent = draggedCard.parentElement;
+            tier.appendChild(draggedCard);
+            draggedCard.classList.add("pop-in");
+
+            updateTierHints();
+            if (originParent === gameListEl) {
+                // Re-render list to hide placed games
+                renderGameList(searchInput.value);
+            }
+        });
+    });
+
+    // Allow dragging back to sidebar
+    gameListEl.addEventListener("dragover", e => {
+        e.preventDefault();
+    });
+
+    gameListEl.addEventListener("drop", e => {
+        e.preventDefault();
+        if (!draggedCard) return;
+        const originParent = draggedCard.parentElement;
+        gameListEl.appendChild(draggedCard);
+        draggedCard.classList.add("pop-in");
+        updateTierHints();
+        if (originParent !== gameListEl) {
+            renderGameList(searchInput.value);
+        }
+    });
+
+    function updateTierHints() {
+        tierEls.forEach(tier => {
+            if (tier.querySelector(".game-card")) {
+                tier.classList.add("has-items");
+            } else {
+                tier.classList.remove("has-items");
+            }
+        });
+    }
+
+    // Search
+    searchInput.addEventListener("input", () => {
+        renderGameList(searchInput.value);
+    });
+
+    // Save / Load / Reset
+    function saveRankings() {
+        const data = {};
+        tierEls.forEach(tier => {
+            const rank = tier.dataset.rank;
+            data[rank] = [];
+            tier.querySelectorAll(".game-card").forEach(card => {
+                data[rank].push(card.dataset.game);
+            });
+        });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        saveBtn.textContent = "Saved!";
+        setTimeout(() => saveBtn.textContent = "Save rankings", 1200);
+    }
+
+    function loadRankings() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+
+        // Clear tiers
+        tierEls.forEach(tier => tier.innerHTML = "");
+
+        // Place games according to saved data
+        Object.keys(data).forEach(rank => {
+            const tier = document.querySelector(`.tier-content[data-rank="${rank}"]`);
+            if (!tier) return;
+            data[rank].forEach(name => {
+                const card = createGameCard(name);
+                tier.appendChild(card);
+            });
+        });
+
+        updateTierHints();
+        renderGameList(searchInput.value);
+        loadBtn.textContent = "Loaded!";
+        setTimeout(() => loadBtn.textContent = "Load rankings", 1200);
+    }
+
+    function resetRankings() {
+        localStorage.removeItem(STORAGE_KEY);
+        tierEls.forEach(tier => tier.innerHTML = "");
+        updateTierHints();
+        renderGameList(searchInput.value);
+        resetBtn.textContent = "Reset!";
+        setTimeout(() => resetBtn.textContent = "Reset", 1200);
+    }
+
+    saveBtn.addEventListener("click", saveRankings);
+    loadBtn.addEventListener("click", loadRankings);
+    resetBtn.addEventListener("click", resetRankings);
+
+    // Initial render
+    renderGameList();
+    updateTierHints();
+
+    // Try auto-load on first visit
+    loadRankings();
+</script>
+
 </body>
 </html>
