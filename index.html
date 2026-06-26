@@ -223,12 +223,292 @@
 </main>
 
 <script>
-/* -----------------------------
-   GAME LIST (50+ GAMES)
-------------------------------*/
 const GAME_DATA = [
     "Roblox","Minecraft","Grand Theft Auto V","Fortnite","Call of Duty: Warzone",
     "Apex Legends","Valorant","League of Legends","Dota 2","Counter-Strike 2",
     "Overwatch 2","Rocket League","PUBG","Among Us","Fall Guys",
     "Genshin Impact","Elden Ring","The Legend of Zelda: Breath of the Wild",
-    "Red Dead Redemption 2","Cyberpunk 2077","Halo Infinite","
+    "Red Dead Redemption 2","Cyberpunk 2077","Halo Infinite","Destiny 2",
+    "Rainbow Six Siege","Battlefield 2042","FIFA 24","NBA 2K24","Madden NFL 24",
+    "Animal Crossing: New Horizons","Super Smash Bros. Ultimate","Mario Kart 8 Deluxe",
+    "Splatoon 3","Pokémon Scarlet/Violet","Monster Hunter: World","Monster Hunter Rise",
+    "Sea of Thieves","Rust","ARK: Survival Evolved","Terraria","The Sims 4",
+    "Starfield","No Man’s Sky","Hades","Stardew Valley","Dead by Daylight",
+    "Phasmophobia","Warframe","World of Warcraft","Final Fantasy XIV",
+    "Lost Ark","Diablo IV","Path of Exile","Brawl Stars","Clash Royale","Clash of Clans"
+];
+
+const GAME_ICONS = {
+    "Roblox": "https://yourcdn.com/roblox.png",
+    "Minecraft": "https://yourcdn.com/minecraft.png",
+    "Grand Theft Auto V": "https://yourcdn.com/gta5.png",
+    "Fortnite": "https://yourcdn.com/fortnite.png",
+    "Call of Duty: Warzone": "https://yourcdn.com/warzone.png",
+    "Apex Legends": "https://yourcdn.com/apex.png",
+    "Valorant": "https://yourcdn.com/valorant.png",
+    "League of Legends": "https://yourcdn.com/lol.png",
+    "Dota 2": "https://yourcdn.com/dota2.png",
+    "Counter-Strike 2": "https://yourcdn.com/cs2.png",
+    "Overwatch 2": "https://yourcdn.com/overwatch2.png",
+    "Rocket League": "https://yourcdn.com/rocketleague.png",
+    "PUBG": "https://yourcdn.com/pubg.png",
+    "Among Us": "https://yourcdn.com/amongus.png",
+    "Fall Guys": "https://yourcdn.com/fallguys.png",
+    "Genshin Impact": "https://yourcdn.com/genshin.png",
+    "Elden Ring": "https://yourcdn.com/eldenring.png",
+    "The Legend of Zelda: Breath of the Wild": "https://yourcdn.com/zelda.png",
+    "Red Dead Redemption 2": "https://yourcdn.com/rdr2.png",
+    "Cyberpunk 2077": "https://yourcdn.com/cyberpunk.png",
+    "Halo Infinite": "https://yourcdn.com/halo.png",
+    "Destiny 2": "https://yourcdn.com/destiny2.png",
+    "Rainbow Six Siege": "https://yourcdn.com/r6s.png",
+    "Battlefield 2042": "https://yourcdn.com/bf2042.png",
+    "FIFA 24": "https://yourcdn.com/fifa24.png",
+    "NBA 2K24": "https://yourcdn.com/nba2k24.png",
+    "Madden NFL 24": "https://yourcdn.com/madden24.png",
+    "Animal Crossing: New Horizons": "https://yourcdn.com/animalcrossing.png",
+    "Super Smash Bros. Ultimate": "https://yourcdn.com/ssbu.png",
+    "Mario Kart 8 Deluxe": "https://yourcdn.com/mk8d.png",
+    "Splatoon 3": "https://yourcdn.com/splatoon3.png",
+    "Pokémon Scarlet/Violet": "https://yourcdn.com/pokemon.png",
+    "Monster Hunter: World": "https://yourcdn.com/mhw.png",
+    "Monster Hunter Rise": "https://yourcdn.com/mhrise.png",
+    "Sea of Thieves": "https://yourcdn.com/seaofthieves.png",
+    "Rust": "https://yourcdn.com/rust.png",
+    "ARK: Survival Evolved": "https://yourcdn.com/ark.png",
+    "Terraria": "https://yourcdn.com/terraria.png",
+    "The Sims 4": "https://yourcdn.com/sims4.png",
+    "Starfield": "https://yourcdn.com/starfield.png",
+    "No Man’s Sky": "https://yourcdn.com/nomanssky.png",
+    "Hades": "https://yourcdn.com/hades.png",
+    "Stardew Valley": "https://yourcdn.com/stardew.png",
+    "Dead by Daylight": "https://yourcdn.com/dbd.png",
+    "Phasmophobia": "https://yourcdn.com/phasmophobia.png",
+    "Warframe": "https://yourcdn.com/warframe.png",
+    "World of Warcraft": "https://yourcdn.com/wow.png",
+    "Final Fantasy XIV": "https://yourcdn.com/ffxiv.png",
+    "Lost Ark": "https://yourcdn.com/lostark.png",
+    "Diablo IV": "https://yourcdn.com/diablo4.png",
+    "Path of Exile": "https://yourcdn.com/poe.png",
+    "Brawl Stars": "https://yourcdn.com/brawlstars.png",
+    "Clash Royale": "https://yourcdn.com/clashroyale.png",
+    "Clash of Clans": "https://yourcdn.com/clashofclans.png"
+};
+
+const gameListEl = document.getElementById("gameList");
+const tierEls = document.querySelectorAll(".tier-content");
+const searchInput = document.getElementById("searchInput");
+
+let draggedCard = null;
+let ghostCard = null;
+let offsetX = 0;
+let offsetY = 0;
+
+function createGameCard(name) {
+    const card = document.createElement("div");
+    card.className = "game-card";
+    card.draggable = true;
+    card.dataset.game = name;
+
+    const thumb = document.createElement("div");
+    thumb.className = "game-thumb";
+
+    const img = document.createElement("img");
+    if (GAME_ICONS[name]) {
+        img.src = GAME_ICONS[name];
+        img.alt = name + " icon";
+    } else {
+        img.style.background = "linear-gradient(135deg,#48c6ef,#6f86d6)";
+    }
+    thumb.appendChild(img);
+
+    const title = document.createElement("div");
+    title.className = "game-title";
+    title.textContent = name;
+
+    card.appendChild(thumb);
+    card.appendChild(title);
+
+    addMouseDrag(card);
+    addTouchDrag(card);
+
+    return card;
+}
+
+/* MOUSE DRAG */
+function addMouseDrag(card) {
+    card.addEventListener("dragstart", e => {
+        draggedCard = card;
+        card.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+    });
+
+    card.addEventListener("dragend", () => {
+        card.classList.remove("dragging");
+        draggedCard = null;
+    });
+}
+
+/* TOUCH DRAG (TierMaker style) */
+function addTouchDrag(card) {
+    card.addEventListener("touchstart", e => {
+        const touch = e.touches[0];
+        draggedCard = card;
+
+        offsetX = touch.clientX - card.getBoundingClientRect().left;
+        offsetY = touch.clientY - card.getBoundingClientRect().top;
+
+        ghostCard = card.cloneNode(true);
+        ghostCard.style.position = "fixed";
+        ghostCard.style.left = touch.clientX - offsetX + "px";
+        ghostCard.style.top = touch.clientY - offsetY + "px";
+        ghostCard.style.width = card.offsetWidth + "px";
+        ghostCard.style.opacity = "0.8";
+        ghostCard.style.pointerEvents = "none";
+        ghostCard.style.zIndex = "9999";
+
+        document.body.appendChild(ghostCard);
+        card.classList.add("dragging");
+    }, { passive: true });
+
+    card.addEventListener("touchmove", e => {
+        if (!ghostCard) return;
+        const touch = e.touches[0];
+
+        ghostCard.style.left = touch.clientX - offsetX + "px";
+        ghostCard.style.top = touch.clientY - offsetY + "px";
+
+        tierEls.forEach(t => t.classList.remove("drag-over"));
+        const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (elem) {
+            const tier = elem.closest(".tier-content");
+            if (tier) tier.classList.add("drag-over");
+        }
+
+        e.preventDefault();
+    }, { passive: false });
+
+    card.addEventListener("touchend", e => {
+        if (!ghostCard) return;
+
+        const touch = e.changedTouches[0];
+        const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+
+        tierEls.forEach(t => t.classList.remove("drag-over"));
+
+        if (dropTarget) {
+            const tier = dropTarget.closest(".tier-content");
+            const list = dropTarget.closest(".game-list");
+            if (tier) {
+                tier.appendChild(draggedCard);
+            } else if (list) {
+                gameListEl.appendChild(draggedCard);
+            }
+        }
+
+        ghostCard.remove();
+        ghostCard = null;
+        draggedCard.classList.remove("dragging");
+        draggedCard = null;
+    }, { passive: true });
+}
+
+/* MOUSE DROP TARGETS */
+tierEls.forEach(tier => {
+    tier.addEventListener("dragover", e => e.preventDefault());
+    tier.addEventListener("drop", e => {
+        e.preventDefault();
+        if (draggedCard) tier.appendChild(draggedCard);
+    });
+});
+
+gameListEl.addEventListener("dragover", e => e.preventDefault());
+gameListEl.addEventListener("drop", e => {
+    e.preventDefault();
+    if (draggedCard) gameListEl.appendChild(draggedCard);
+});
+
+/* RENDER LIST */
+function renderGameList(filter = "") {
+    gameListEl.innerHTML = "";
+    const f = filter.toLowerCase();
+
+    GAME_DATA.forEach(name => {
+        // Only show games not already in tiers
+        let placed = false;
+        tierEls.forEach(tier => {
+            tier.querySelectorAll(".game-card").forEach(card => {
+                if (card.dataset.game === name) placed = true;
+            });
+        });
+        if (placed) return;
+
+        if (!f || name.toLowerCase().includes(f)) {
+            gameListEl.appendChild(createGameCard(name));
+        }
+    });
+}
+
+searchInput.addEventListener("input", () => {
+    renderGameList(searchInput.value);
+});
+
+/* SAVE / LOAD / RESET */
+const STORAGE_KEY = "tierSave_icons_v2";
+
+document.getElementById("saveBtn").onclick = () => {
+    const data = { list: [] };
+    tierEls.forEach(tier => {
+        const rank = tier.dataset.rank;
+        data[rank] = [];
+        tier.querySelectorAll(".game-card").forEach(card => {
+            data[rank].push(card.dataset.game);
+        });
+    });
+    gameListEl.querySelectorAll(".game-card").forEach(card => {
+        data.list.push(card.dataset.game);
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+};
+
+document.getElementById("loadBtn").onclick = () => {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+
+    tierEls.forEach(t => t.innerHTML = "");
+    gameListEl.innerHTML = "";
+
+    GAME_DATA.forEach(name => {
+        const card = createGameCard(name);
+        if (data.list && data.list.includes(name)) {
+            gameListEl.appendChild(card);
+        } else {
+            let placed = false;
+            tierEls.forEach(tier => {
+                const rank = tier.dataset.rank;
+                if (data[rank] && data[rank].includes(name)) {
+                    tier.appendChild(card);
+                    placed = true;
+                }
+            });
+            if (!placed && !data.list) {
+                gameListEl.appendChild(card);
+            }
+        }
+    });
+};
+
+document.getElementById("resetBtn").onclick = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    tierEls.forEach(t => t.innerHTML = "");
+    gameListEl.innerHTML = "";
+    renderGameList();
+};
+
+/* INITIAL */
+renderGameList();
+</script>
+
+</body>
+</html>
